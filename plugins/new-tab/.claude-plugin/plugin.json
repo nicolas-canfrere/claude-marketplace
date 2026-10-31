@@ -1,0 +1,8 @@
+{
+  "name": "new-tab",
+  "description": "Open a new herdr tab running a fresh Claude session seeded with a prompt",
+  "version": "0.1.0",
+  "author": {
+    "name": "Nicolas Canfrere"
+  }
+}

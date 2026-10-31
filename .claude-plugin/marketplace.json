@@ -1,0 +1,19 @@
+{
+  "name": "nicolas-canfrere",
+  "owner": {
+    "name": "Nicolas Canfrere",
+    "email": "nico.canfrere@gmail.com"
+  },
+  "description": "Personal Claude Code plugins",
+  "plugins": [
+    {
+      "name": "new-tab",
+      "description": "Open a new herdr tab running a fresh Claude session seeded with a prompt",
+      "author": {
+        "name": "Nicolas Canfrere"
+      },
+      "source": "./plugins/new-tab",
+      "category": "productivity"
+    }
+  ]
+}
