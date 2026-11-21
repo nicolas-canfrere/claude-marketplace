@@ -1,5 +1,8 @@
+import contextlib
+import io
 import itertools
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -129,6 +132,91 @@ class ExtractSignalsTest(unittest.TestCase):
 
         self.assertEqual(301, len(signals[0].before_prompt))
         self.assertTrue(signals[0].before_prompt.endswith("…"))
+
+
+class CondenseTest(unittest.TestCase):
+    def setUp(self):
+        self.root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        self.projects = self.root / "projects"
+        self.out = self.root / "out"
+        self.projects.mkdir()
+
+    def git_repo(self, name, remote=None):
+        path = self.root / name
+        path.mkdir()
+        subprocess.run(["git", "init", "-q", str(path)], check=True)
+        if remote:
+            subprocess.run(["git", "-C", str(path), "remote", "add", "origin", remote], check=True)
+        return path
+
+    def session(self, cwd, entries, project="project", name=None, subdir=None):
+        directory = self.projects / project / (subdir or "")
+        directory.mkdir(parents=True, exist_ok=True)
+        path = directory / f"{name or next(_ids)}.jsonl"
+        path.write_text("".join(json.dumps({**entry, "cwd": str(cwd)}) + "\n" for entry in entries), encoding="utf-8")
+
+    def run_main(self):
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            status = condense.main(["--since", "2026-11-20", "--out", str(self.out), "--projects", str(self.projects)])
+        self.assertEqual(0, status)
+        return json.loads(output.getvalue())
+
+    def test_writes_a_file_only_for_a_session_with_signals(self):
+        repo = self.git_repo("app")
+        self.session(repo, [user("bonjour"), assistant("Salut.")])
+        self.session(repo, call("Bash", {"command": "ls"}, "boom", True))
+
+        summary = self.run_main()
+
+        self.assertEqual(2, summary["sessions"])
+        self.assertEqual(1, summary["sessions_with_signals"])
+        self.assertEqual(1, len(list(self.out.iterdir())))
+
+    def test_groups_two_clones_of_the_same_remote(self):
+        first = self.git_repo("app", remote="git@example.com:me/app.git")
+        second = self.git_repo("app-copy", remote="git@example.com:me/app.git")
+        self.session(first, call("Bash", {"command": "ls"}, "boom", True), project="a")
+        self.session(second, call("Bash", {"command": "ls"}, "boom", True), project="b")
+
+        summary = self.run_main()
+
+        self.assertEqual(1, len(summary["repos"]))
+
+    def test_classifies_a_missing_directory_out_of_repo(self):
+        self.session(self.root / "gone", call("Bash", {"command": "ls"}, "boom", True))
+
+        summary = self.run_main()
+
+        self.assertEqual(["hors repo"], [repo["name"] for repo in summary["repos"]])
+
+    def test_ignores_subagent_transcripts(self):
+        repo = self.git_repo("app")
+        self.session(repo, call("Bash", {"command": "ls"}, "boom", True), subdir="session/subagents", name="agent-x")
+
+        summary = self.run_main()
+
+        self.assertEqual(0, summary["sessions"])
+        self.assertFalse(self.out.exists() and any(self.out.iterdir()))
+
+    def test_ignores_sessions_older_than_the_period(self):
+        repo = self.git_repo("app")
+        self.session(repo, call("Bash", {"command": "ls"}, "boom", True, day=10))
+
+        summary = self.run_main()
+
+        self.assertEqual(0, summary["sessions"])
+
+    def test_keeps_one_batch_under_the_limit(self):
+        self.assertEqual([["a1", "b1"]], condense.batches({"a": [("a1", 10)], "b": [("b1", 10)]}, limit=100))
+
+    def test_keeps_a_repo_together_when_it_fits(self):
+        sizes = {"a": [("a1", 60)], "b": [("b1", 30), ("b2", 30)]}
+
+        self.assertEqual([["a1"], ["b1", "b2"]], condense.batches(sizes, limit=100))
+
+    def test_gives_an_oversized_file_its_own_batch(self):
+        self.assertEqual([["a1"], ["a2"]], condense.batches({"a": [("a1", 250), ("a2", 10)]}, limit=100))
 
 
 if __name__ == "__main__":
