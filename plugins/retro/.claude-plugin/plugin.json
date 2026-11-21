@@ -1,0 +1,8 @@
+{
+  "name": "retro",
+  "description": "Review the Claude Code sessions of a period, across repos, and improve the agent's environment: checks, repo docs, global instructions, memory",
+  "version": "0.1.0",
+  "author": {
+    "name": "Nicolas Canfrere"
+  }
+}

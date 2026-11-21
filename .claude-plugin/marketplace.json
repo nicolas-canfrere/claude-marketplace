@@ -23,6 +23,15 @@
       },
       "source": "./plugins/architecture-improvements",
       "category": "development"
+    },
+    {
+      "name": "retro",
+      "description": "Review the Claude Code sessions of a period, across repos, and improve the agent's environment: checks, repo docs, global instructions, memory",
+      "author": {
+        "name": "Nicolas Canfrere"
+      },
+      "source": "./plugins/retro",
+      "category": "productivity"
     }
   ]
 }
