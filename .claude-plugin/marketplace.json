@@ -14,6 +14,15 @@
       },
       "source": "./plugins/new-tab",
       "category": "productivity"
+    },
+    {
+      "name": "architecture-improvements",
+      "description": "Find where a codebase would gain from deeper modules (Ousterhout), report the leads with their evidence, then dig into the one you pick",
+      "author": {
+        "name": "Nicolas Canfrere"
+      },
+      "source": "./plugins/architecture-improvements",
+      "category": "development"
     }
   ]
 }

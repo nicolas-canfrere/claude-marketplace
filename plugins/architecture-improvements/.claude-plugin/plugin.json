@@ -1,0 +1,8 @@
+{
+  "name": "architecture-improvements",
+  "description": "Find where a codebase would gain from deeper modules (Ousterhout), report the leads with their evidence, then dig into the one you pick",
+  "version": "0.1.0",
+  "author": {
+    "name": "Nicolas Canfrere"
+  }
+}
