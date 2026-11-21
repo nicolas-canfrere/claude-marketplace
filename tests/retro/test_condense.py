@@ -125,6 +125,29 @@ class ExtractSignalsTest(unittest.TestCase):
 
         self.assertEqual(1, len(entries))
 
+    def test_skips_a_line_cut_inside_a_character(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "session.jsonl"
+            path.write_bytes(json.dumps(user("bonjour")).encode() + b'\n{"type": "user", "x": "caf\xc3')
+
+            entries = condense.read_entries(path)
+
+        self.assertEqual(1, len(entries))
+
+    def test_does_not_take_a_shell_command_for_a_human_message(self):
+        entries = [user("relance les tests"), assistant("Fait."), user("<bash-input>docker stop app</bash-input>")]
+
+        signals = condense.extract_signals(entries, SINCE)
+
+        self.assertEqual([], signals)
+
+    def test_dates_each_signal(self):
+        entries = call("Bash", {"command": "ls"}, "boom", True)
+
+        signals = condense.extract_signals(entries, SINCE)
+
+        self.assertRegex(signals[0].time, r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$")
+
     def test_clips_long_context(self):
         entries = [user("x" * 1000), *call("Bash", {"command": "ls"}, "boom", True)]
 

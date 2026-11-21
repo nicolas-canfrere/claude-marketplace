@@ -22,7 +22,11 @@ CORRECTION_MARKERS = (
     "annule", "reviens", "remets", "revert", "au lieu de", "pourquoi tu", "ne fais pas", "n'ajoute pas",
     "no,", "wrong", "don't", "undo", "that's not",
 )
-NOT_HUMAN_PREFIXES = ("<system-reminder", "<local-command", "<task-notification", "<command-name>")
+# Harness blocks, the user's own slash commands, `!` shell commands and pastes are not messages to the agent.
+NOT_HUMAN_PREFIXES = (
+    "<system-reminder", "<local-command", "<task-notification", "<command-name>", "<command-message>",
+    "<bash-input>", "<bash-stdout>", "<bash-stderr>", "<pasted_content",
+)
 INTERRUPT_PREFIX = "[Request interrupted by user"
 DENIAL_TEXT = "The user doesn't want to proceed"
 LIMIT = 150000
@@ -40,7 +44,8 @@ class Signal:
 
 def read_entries(path: Path) -> list[dict]:
     entries = []
-    with path.open(encoding="utf-8") as lines:
+    # A session still being written may end inside a multi-byte character.
+    with path.open(encoding="utf-8", errors="replace") as lines:
         for line in lines:
             try:
                 entries.append(json.loads(line))
@@ -99,7 +104,7 @@ def extract_signals(entries: list[dict], since: datetime) -> list[Signal]:
             continue
         moment = parse_time(entry["timestamp"])
         in_period = moment >= since
-        hour = moment.astimezone().strftime("%H:%M")
+        hour = moment.astimezone().strftime("%Y-%m-%d %H:%M")
 
         def emit(kind: str, detail: str) -> None:
             if in_period:
