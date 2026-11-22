@@ -1,7 +1,7 @@
 {
   "name": "asyncapi-doc",
   "description": "Reverse-document the RabbitMQ flows of a legacy PHP service into a validated AsyncAPI 3.1 file, built only from what the code proves",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "Nicolas Canfrere"
   }

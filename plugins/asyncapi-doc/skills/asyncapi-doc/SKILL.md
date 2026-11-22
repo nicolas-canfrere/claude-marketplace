@@ -80,7 +80,13 @@ Si `asyncapi.yaml` existe : **mise à jour incrémentale**.
 - Conserver `info`, descriptions, exemples et tout contenu ajouté à la main.
 - Ajouter ce qui manque.
 - En cas de désaccord entre le document et le code : **le code gagne pour la structure** (noms, adresses, types, champs, `required`) ; le texte libre (descriptions, exemples) est conservé tel quel. Chaque divergence corrigée est listée dans le rapport.
-- Ce qui n'existe plus dans le code reçoit `x-deprecated-candidate: true` au lieu d'être supprimé.
+- **Renommages, avant de conclure à un ajout + une disparition.** Pour chaque élément du document absent du code, chercher parmi les éléments nouveaux un candidat qui partage au moins deux de ces traits : même classe PHP dans `x-source`, même exchange, même schéma de payload (mêmes champs). Confirmer avec git quand c'est possible (`git log -S'<ancienne valeur>' --oneline` montre le commit qui l'a remplacée).
+  - Renommage confirmé → modifier l'élément existant sur place (clé, `address`, nom de message) pour garder ses descriptions et exemples, mettre à jour les `$ref` qui le visent, et le lister comme renommage dans le rapport.
+  - Doute (un seul trait commun, ou plusieurs candidats) → ne pas fusionner : traiter comme ajout + disparition, et poser la question dans le rapport (« `user.created` remplacé par `user.registered` ? »).
+- Ce qui n'existe plus dans le code (et n'est pas un renommage) reçoit `x-deprecated-candidate: "<YYYY-MM-DD>"`, la date du passage qui l'a constaté, au lieu d'être supprimé. Ne jamais changer cette date lors des passages suivants.
+- **Réévaluer les marqueurs existants à chaque passage :**
+  - `x-unverified` : si le code prouve désormais l'élément, retirer le marqueur et renseigner la valeur prouvée ; si la raison a changé, la réécrire ; sinon le laisser.
+  - `x-deprecated-candidate` : si l'élément est réapparu dans le code, retirer le marqueur ; sinon le garder. Supprimer l'élément seulement quand l'utilisateur le confirme dans la session (en réponse au rapport), jamais de sa propre initiative.
 
 Conventions :
 - `channels` côté publication : un channel par routing key, `address` = routing key. Routing key dynamique → paramètre de channel, pas de joker :
@@ -144,6 +150,8 @@ Corriger jusqu'à validation. Dire explicitement quelle méthode a été utilis�
 Court, à la fin :
 - Nombre de flux send/receive documentés, nouveaux vs modifiés.
 - Divergences document/code corrigées.
+- Renommages appliqués, et renommages probables non fusionnés avec leur question.
+- Marqueurs retirés : `x-unverified` levés (avec la preuve trouvée), `x-deprecated-candidate` d'éléments revenus dans le code.
 - Liste des éléments `x-unverified` avec la question précise à poser à l'équipe (ex. « type de l'exchange `billing` : déclaré hors de ce repo »).
-- Candidats à la dépréciation.
+- Candidats à la dépréciation, avec leur date de constat, et la question : « supprimer du document ? ».
 - Points de risque repérés (payload `serialize()`, routing key entièrement dynamique, message sans consommateur visible, dead-letter sans consommateur, valeur de config non résolue).
