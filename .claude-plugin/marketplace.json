@@ -41,6 +41,15 @@
       },
       "source": "./plugins/risk-review",
       "category": "development"
+    },
+    {
+      "name": "asyncapi-doc",
+      "description": "Reverse-document the RabbitMQ flows of a legacy PHP service into a validated AsyncAPI 3.1 file, built only from what the code proves",
+      "author": {
+        "name": "Nicolas Canfrere"
+      },
+      "source": "./plugins/asyncapi-doc",
+      "category": "development"
     }
   ]
 }

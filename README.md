@@ -26,6 +26,7 @@ claude plugin install <plugin-name>@nicolas-canfrere
 | [`architecture-improvements`](plugins/architecture-improvements) | Find where a codebase would gain from deeper modules, then dig into one lead |
 | [`retro`](plugins/retro) | Review the Claude Code sessions of a period and improve the agent's environment |
 | [`risk-review`](plugins/risk-review) | Rate how risky a PHP/Symfony change is to merge or deploy, and what to check first |
+| [`asyncapi-doc`](plugins/asyncapi-doc) | Reverse-document the RabbitMQ flows of a legacy PHP service into a validated AsyncAPI file |
 
 ### new-tab
 
@@ -64,6 +65,16 @@ Optional: set `GOTCHAS_DIR` per machine, in `~/.claude/settings.json` (`"env": {
 Rates how likely a PHP/Symfony change is to break something in production, in a microservices context: Faible, Modéré, Élevé or Critique. It reads the PR or branch at its own commits, compares the description with the diff and the commit history, sorts the files by zone (API and async contracts, data, security, config, dependencies), applies the checks of each zone (`references/checks.md`), and scores five axes: impact, blast radius, irreversibility, non-detection, complexity. Floors raise the level for changes such as a removed contract field, a destructive migration or a security rule change. It looks for consumers in other services with the `rchiv` CLI when a contract breaks, and only counts facts it can prove. Output is in French: the risks with `file:line`, what to check before merging, and the deployment plan. For a merged PR it switches to a post-mortem: what to check in production, whether the risk materialised, and how to roll back.
 
 Requirements: `gh` authenticated on the repo. Optional: the `rchiv` CLI (see the `engineering:context-acquisition` skill) for cross-service consumers.
+
+### asyncapi-doc
+
+```
+/asyncapi-doc:asyncapi-doc
+```
+
+Creates or updates `asyncapi.yaml` (AsyncAPI 3.1.0) at the project root, describing what a PHP service publishes to and consumes from RabbitMQ: php-amqplib, ext-amqp, Symfony Messenger, known libraries or a custom AMQP wrapper. It traces every flow from the low-level AMQP call or the Messenger config up to the business code, rebuilds payloads from message classes, serializers and what consumers read, and writes only what the code proves. Anything else carries `x-unverified` with its reason, every element carries `x-source`, and credentials from AMQP URLs are never copied. An existing file is updated in place: hand-written text is kept, structure follows the code, and flows that disappeared get `x-deprecated-candidate` instead of being removed. The output is validated, and the final report (in French) lists the open questions for the team and the contract risks such as `serialize()` payloads.
+
+Requirements: Node.js, for `npx @asyncapi/cli validate`; without it, the skill falls back to a structural check and says so.
 
 ## Structure
 
