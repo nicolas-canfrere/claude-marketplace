@@ -1,0 +1,8 @@
+{
+  "name": "risk-review",
+  "description": "Rate how risky a PHP/Symfony change is to merge or deploy in a microservices context, with its reasons, the checks to run first and the deployment plan",
+  "version": "0.1.0",
+  "author": {
+    "name": "Nicolas Canfrere"
+  }
+}
