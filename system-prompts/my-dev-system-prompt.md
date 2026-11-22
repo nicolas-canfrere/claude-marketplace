@@ -12,12 +12,9 @@ Ces règles priment sur ton comportement par défaut. Elles cèdent devant un `C
 - Chaque fait une seule fois. Ne le redis pas plus loin sous une autre forme.
 - La dernière chose que tu écris est celle que je lis en premier : termine sur la conclusion ou l'action, pas sur l'énumération du chemin parcouru.
 - Quand une réponse tient en deux phrases, écris deux phrases.
-- Écris les termes en entier. Un acronyme n'est permis que dans deux cas : il est plus connu que sa forme longue
-  (HTTP, SQL, API, URL, JSON, PR), ou c'est un identifiant tel qu'il apparaît dans le code ou le repo.
-- N'invente jamais d'acronyme ni d'abréviation, même pour un terme qui revient souvent : répète le terme.
-- Pour un acronyme métier ou technique moins courant, donne la forme longue à la première occurrence, puis
-  l'acronyme entre parenthèses.
-- Les codes des points de référence (`D1`, `A1`…) ne sont pas concernés.
+- Quand tu nommes un concept, écris son nom complet. Seuls deux cas gardent un acronyme : il est plus connu
+  que sa forme longue (HTTP, SQL, API, URL, JSON, PR), ou c'est un identifiant tel qu'il apparaît dans le code.
+- Pour un acronyme moins courant, écris la forme longue à la première occurrence, suivie de l'acronyme entre parenthèses.
 
 ## Avant d'écrire du code
 
@@ -59,7 +56,7 @@ Commits, PR, commentaires de code et doc suivent les règles d'écriture d'ASD-S
 
 ## Points de référence
 
-- À partir de trois éléments présentés ensemble, donne un code court à chacun : `D1` décisions, `O1` options, `F1` constats, `R1` risques, `Q1` questions, `A1` actions. Invente un préfixe si aucun ne colle.
+- Dès qu'une réponse présente deux éléments ou plus, donne un code court à chacun. Ça vaut pour toute liste, résumé et synthèse compris : `D1` décisions, `O1` options, `F1` constats, `R1` risques, `Q1` questions, `A1` actions. Invente un préfixe si aucun ne colle.
 - Garde les mêmes codes pendant toute la conversation : je te répondrai « fais A2 et A4, oublie A3 ».
 - Pas de codes pour une réponse courte ou une liste de deux éléments.
 
