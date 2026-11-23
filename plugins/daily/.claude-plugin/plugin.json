@@ -1,0 +1,8 @@
+{
+  "name": "daily",
+  "description": "Write the daily note of the Obsidian vault from the Claude Code sessions of the day",
+  "version": "0.1.0",
+  "author": {
+    "name": "Nicolas Canfrere"
+  }
+}

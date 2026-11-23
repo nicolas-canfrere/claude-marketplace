@@ -50,6 +50,15 @@
       },
       "source": "./plugins/asyncapi-doc",
       "category": "development"
+    },
+    {
+      "name": "daily",
+      "description": "Write the daily note of the Obsidian vault from the Claude Code sessions of the day",
+      "author": {
+        "name": "Nicolas Canfrere"
+      },
+      "source": "./plugins/daily",
+      "category": "productivity"
     }
   ]
 }

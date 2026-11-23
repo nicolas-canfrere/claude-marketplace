@@ -27,6 +27,7 @@ claude plugin install <plugin-name>@nicolas-canfrere
 | [`retro`](plugins/retro) | Review the Claude Code sessions of a period and improve the agent's environment |
 | [`risk-review`](plugins/risk-review) | Rate how risky a PHP/Symfony change is to merge or deploy, and what to check first |
 | [`asyncapi-doc`](plugins/asyncapi-doc) | Reverse-document the RabbitMQ flows of a legacy PHP service into a validated AsyncAPI file |
+| [`daily`](plugins/daily) | Write the daily note of the Obsidian vault from the Claude Code sessions of the day |
 
 ### new-tab
 
@@ -75,6 +76,16 @@ Requirements: `gh` authenticated on the repo. Optional: the `rchiv` CLI (see the
 Creates or updates `asyncapi.yaml` (AsyncAPI 3.1.0) at the project root, describing what a PHP service publishes to and consumes from RabbitMQ: php-amqplib, ext-amqp, Symfony Messenger, known libraries or a custom AMQP wrapper. It traces every flow from the low-level AMQP call or the Messenger config up to the business code, rebuilds payloads from message classes, serializers and what consumers read, and writes only what the code proves. Anything else carries `x-unverified` with its reason, every element carries `x-source`, and credentials from AMQP URLs are never copied. An existing file is updated in place: hand-written text is kept, structure follows the code, and flows that disappeared get `x-deprecated-candidate` instead of being removed. The output is validated, and the final report (in French) lists the open questions for the team and the contract risks such as `serialize()` payloads.
 
 Requirements: Node.js, for `npx @asyncapi/cli validate`; without it, the skill falls back to a structural check and says so.
+
+### daily
+
+```
+/daily:daily [YYYY-MM-DD]
+```
+
+Writes `6_DAILY/YYYY-MM-DD.md` in the Obsidian vault from the Claude Code sessions of the day (today by default). A bundled script (`scripts/extract.py`, Python 3 standard library) reduces each session active that day to its prompts and last answers, without the subagent transcripts. The note groups the work by subject, not by session. Each subject gets what was done, the decisions, the PRs, the traps, what is left, and the sessions to resume. The note links each subject to its vault project. If the note exists, the skill replaces only the `## Avec Claude` and `## À reprendre demain` sections.
+
+Requirements: the vault path is fixed in `SKILL.md` (`/home/nicolas/Documents/VAULT`).
 
 ## Structure
 
